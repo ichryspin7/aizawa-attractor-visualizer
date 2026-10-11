@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Aizawa Attractor</title>
+    <!-- Load Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background-color: #0d1117; /* GitHub Dark Mode background */
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+        h2 {
+            margin-top: 20px;
+            font-weight: 400;
+            letter-spacing: 2px;
+        }
+        #plot {
+            width: 100vw;
+            height: 90vh;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>AIZAWA ATTRACTOR</h2>
+    <div id="plot"></div>
+
+    <script>
+        // Aizawa Attractor Parameters (Matched from your video)
+        const a = 0.95;
+        const b = 0.7;
+        const c = 0.6;
+        const d = 3.5;
+        const e = 0.25;
+        const f = 0.1;
+
+        // Initial starting coordinates
+        let x = 0.1, y = 0, z = 0; 
+        
+        // Time step and number of points to draw
+        const dt = 0.01;
+        const numPoints = 20000;
+
+        const xs = [], ys = [], zs = [];
+
+        // Euler's Method to calculate the trajectory of the attractor
+        for (let i = 0; i < numPoints; i++) {
+            // The Differential Equations
+            const dx = ((z - b) * x - d * y) * dt;
+            const dy = (d * x + (z - b) * y) * dt;
+            const dz = (c + a * z - Math.pow(z, 3) / 3 - (x * x + y * y) * (1 + e * z) + f * z * Math.pow(x, 3)) * dt;
+
+            x += dx;
+            y += dy;
+            z += dz;
+
+            xs.push(x);
+            ys.push(y);
+            zs.push(z);
+        }
+
+        // Plotly Configuration
+        const trace = {
+            x: xs,
+            y: ys,
+            z: zs,
+            mode: 'lines',
+            line: {
+                color: zs, // Maps the color to the Z-axis depth
+                colorscale: 'Plasma', // You can change to 'Viridis', 'Inferno', or 'Jet'
+                width: 2
+            },
+            type: 'scatter3d'
+        };
+
+        const layout = {
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'transparent',
+            margin: { l: 0, r: 0, b: 0, t: 0 },
+            scene: {
+                xaxis: { visible: false }, // Hides the grid lines for a cleaner look
+                yaxis: { visible: false },
+                zaxis: { visible: false },
+                camera: { 
+                    eye: { x: 1.5, y: 1.5, z: 0.5 } // Initial viewing angle
+                }
+            }
+        };
+
+        // Render the plot
+        Plotly.newPlot('plot', [trace], layout, {responsive: true});
+    </script>
+</body>
+</html>
